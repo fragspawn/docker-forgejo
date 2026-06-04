@@ -357,10 +357,6 @@ services:
       # FORGEJO__camo__ENABLED: "false"
       # FORGEJO__camo__SERVER_URL: ""
       # FORGEJO__camo__HMAC_KEY: ""
-
-  # ---------------------------------------------------------------------------
-  # docker-in-docker (DinD) – provides a Docker daemon for runner job containers
-  # ---------------------------------------------------------------------------
   docker-in-docker:
     image: docker:dind
     container_name: forgejo-dind
@@ -383,10 +379,6 @@ services:
       start_period: 20s
     volumes:
       - dind-data:/var/lib/docker
-
-  # ---------------------------------------------------------------------------
-  # Forgejo Actions Runner
-  # ---------------------------------------------------------------------------
   runner:
     image: data.forgejo.org/forgejo/runner:12
     container_name: forgejo-runner
@@ -418,11 +410,9 @@ services:
       RUNNER_LABELS: "ubuntu-latest:docker://node:20-bookworm,ubuntu-22.04:docker://node:20-bookworm"
       # Point runner's Docker client at the DinD daemon
       DOCKER_HOST: "tcp://docker-in-docker:2375"
-
 networks:
   forgejo:
     external: false
-
 volumes:
   forgejo-data:
   mariadb-data:
