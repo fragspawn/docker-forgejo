@@ -40,7 +40,7 @@ services:
       - forgejo
     volumes:
       - forgejo-data:/data
-      - ./server/entrypoint.sh:/entrypoint.sh:ro
+      - ./server/entrypoint.sh:/entrypoint.sh:z
       - /etc/localtime:/etc/localtime:ro
     entrypoint:
       - /bin/sh
@@ -264,7 +264,7 @@ services:
       # -----------------------------------------------------------------------
       # [packages] – Package registry
       # -----------------------------------------------------------------------
-      # FORGEJO__packages__ENABLED: "true"
+      FORGEJO__packages__ENABLED: "true"
       # FORGEJO__packages__LIMIT_TOTAL_OWNER_COUNT: "-1"
       # FORGEJO__packages__LIMIT_TOTAL_OWNER_SIZE: "-1"
 
@@ -393,7 +393,7 @@ services:
       - forgejo
     volumes:
       - runner-data:/data
-      - ./runner/entrypoint.sh:/entrypoint.sh:ro
+      - ./runner/entrypoint.sh:/entrypoint.sh:z
     entrypoint:
       - /bin/sh
       - /entrypoint.sh
