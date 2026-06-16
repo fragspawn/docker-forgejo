@@ -149,7 +149,7 @@ services:
       # -----------------------------------------------------------------------
       # [service] – Registration, email verification, captcha
       # -----------------------------------------------------------------------
-      # FORGEJO__service__DISABLE_REGISTRATION: "false"
+      FORGEJO__service__DISABLE_REGISTRATION: "true"
       # FORGEJO__service__REGISTER_EMAIL_CONFIRM: "false"
       # FORGEJO__service__REGISTER_MANUAL_CONFIRM: "false"
       # FORGEJO__service__REQUIRE_SIGNIN_VIEW: "false"
