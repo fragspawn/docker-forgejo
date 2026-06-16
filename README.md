@@ -1,6 +1,6 @@
 ### Forgejo docker compose instance
 
-This is the forgejo instance, its database and runner, connected with admin credentials in the environment
+This is the forgejo instance, its database and runner, with admin credentials as environment vars
 
 ## Containers
 

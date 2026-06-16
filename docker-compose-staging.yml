@@ -73,19 +73,19 @@ services:
       # [DEFAULT] – Overall application settings
       # -----------------------------------------------------------------------
       FORGEJO____APP_NAME: "Forgejo"
-      # FORGEJO____APP_SLOGAN: "Beyond coding. We forge."
-      # FORGEJO____RUN_MODE: "prod"             # dev | prod
-      # FORGEJO____WORK_PATH: "/data/gitea"
+      FORGEJO____APP_SLOGAN: "Beyond coding. We forge."
+      FORGEJO____RUN_MODE: "prod"             # dev | prod
+      FORGEJO____WORK_PATH: "/tmp"
 
       # -----------------------------------------------------------------------
       # [server] – HTTP / SSH listener
       # -----------------------------------------------------------------------
-      FORGEJO__server__DOMAIN: ${FORGEJO__server__DOMAIN}"localhost"
-      FORGEJO__server__ROOT_URL: ${FORGEJO__server__ROOT_URL}"http://localhost:3000/"
-      FORGEJO__server__HTTP_PORT: ${FORGEJO__server__HTTP_PORT}"3000"
-      FORGEJO__server__SSH_DOMAIN: ${FORGEJO__server__SSH_DOMAIN}"localhost"
-      FORGEJO__server__SSH_PORT: ${FORGEJO__server__SSH_PORT}"22"
-      FORGEJO__server__APP_DATA_PATH: ${FORGEJO__server__APP_DATA_PATH}"/data/gitea"
+      FORGEJO__server__DOMAIN: ${FORGEJO__server__DOMAIN-localhost}
+      FORGEJO__server__ROOT_URL: ${FORGEJO__server__ROOT_URL:-"http://localhost:3000/"}
+      FORGEJO__server__HTTP_PORT: ${FORGEJO__server__HTTP_PORT-3000}
+      FORGEJO__server__SSH_DOMAIN: ${FORGEJO__server__SSH_DOMAIN-localhost}
+      FORGEJO__server__SSH_PORT: ${FORGEJO__server__SSH_PORT-22}
+      FORGEJO__server__APP_DATA_PATH: ${FORGEJO__server__APP_DATA_PATH:-/data/gitea}
       # FORGEJO__server__PROTOCOL: "http"       # http | https | fcgi | http+unix | fcgi+unix
       # FORGEJO__server__HTTP_ADDR: "0.0.0.0"
       # FORGEJO__server__OFFLINE_MODE: "true"   # serve static assets locally
@@ -112,7 +112,7 @@ services:
       # [database] – MariaDB connection
       # -----------------------------------------------------------------------
       FORGEJO__database__DB_TYPE: "mysql"
-      FORGEJO__database__HOST: ${MARIADB_HOST:-db}":3306"
+      FORGEJO__database__HOST: ${MARIADB_HOST:-db}
       FORGEJO__database__NAME: ${MARIADB_DATABASE:-forgejo}
       FORGEJO__database__USER: ${MARIADB_USER:-forgejo}
       FORGEJO__database__PASSWD: ${MARIADB_PASSWORD:-changeme-forgejo}
