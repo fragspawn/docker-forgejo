@@ -283,5 +283,6 @@ networks:
   forgejo:
     external: false
 volumes:
+  mariadb-sql:
   forgejo-data:
   mariadb-data:
