@@ -31,7 +31,9 @@ services:
       retries: 10
       start_period: 30s
   server:
-    image: codeberg.org/forgejo/forgejo:15
+    build:
+      context: .
+      dockerfile: staging.Dockerfile
     container_name: forgejo
     restart: unless-stopped
     depends_on:
@@ -41,7 +43,6 @@ services:
       - forgejo
     volumes:
       - forgejo-data:/data
-      - ./server/entrypoint.sh:/entrypoint.sh:z
     entrypoint:
       - /bin/sh
       - /entrypoint.sh
@@ -79,12 +80,12 @@ services:
       # -----------------------------------------------------------------------
       # [server] – HTTP / SSH listener
       # -----------------------------------------------------------------------
-      FORGEJO__server__DOMAIN: "localhost"
-      FORGEJO__server__ROOT_URL: "http://localhost:3000/"
-      FORGEJO__server__HTTP_PORT: "3000"
-      FORGEJO__server__SSH_DOMAIN: "localhost"
-      FORGEJO__server__SSH_PORT: "22"
-      FORGEJO__server__APP_DATA_PATH: "/data/gitea"
+      FORGEJO__server__DOMAIN: ${FORGEJO__server__DOMAIN}"localhost"
+      FORGEJO__server__ROOT_URL: ${FORGEJO__server__ROOT_URL}"http://localhost:3000/"
+      FORGEJO__server__HTTP_PORT: ${FORGEJO__server__HTTP_PORT}"3000"
+      FORGEJO__server__SSH_DOMAIN: ${FORGEJO__server__SSH_DOMAIN}"localhost"
+      FORGEJO__server__SSH_PORT: ${FORGEJO__server__SSH_PORT}"22"
+      FORGEJO__server__APP_DATA_PATH: ${FORGEJO__server__APP_DATA_PATH}"/data/gitea"
       # FORGEJO__server__PROTOCOL: "http"       # http | https | fcgi | http+unix | fcgi+unix
       # FORGEJO__server__HTTP_ADDR: "0.0.0.0"
       # FORGEJO__server__OFFLINE_MODE: "true"   # serve static assets locally
@@ -111,10 +112,10 @@ services:
       # [database] – MariaDB connection
       # -----------------------------------------------------------------------
       FORGEJO__database__DB_TYPE: "mysql"
-      FORGEJO__database__HOST: "db:3306"
-      FORGEJO__database__NAME: "forgejo"
-      FORGEJO__database__USER: "forgejo"
-      FORGEJO__database__PASSWD: "changeme-forgejo"
+      FORGEJO__database__HOST: ${MARIADB_HOST:-db}":3306"
+      FORGEJO__database__NAME: ${MARIADB_DATABASE:-forgejo}
+      FORGEJO__database__USER: ${MARIADB_USER:-forgejo}
+      FORGEJO__database__PASSWD: ${MARIADB_PASSWORD:-changeme-forgejo}
       # FORGEJO__database__SSL_MODE: "false"    # false | true | skip-verify | prefer
       # FORGEJO__database__CHARSET_COLLATION: ""
       # FORGEJO__database__LOG_SQL: "false"
@@ -254,9 +255,9 @@ services:
       # [actions] – Forgejo Actions (CI/CD)
       # -----------------------------------------------------------------------
       FORGEJO__actions__ENABLED: "true"
-      FORGEJO_ADMIN_USER: "forgeadmin"
-      FORGEJO_ADMIN_PASSWORD: "changeme-admin"
-      FORGEJO_ADMIN_EMAIL: "admin@localhost"
+      FORGEJO_ADMIN_USER: ${FORGEJO_ADMIN_USER:-"forgeadmin"}
+      FORGEJO_ADMIN_PASSWORD: ${FORGEJO_ADMIN_PASSWORD:-"changeme-admin"}
+      FORGEJO_ADMIN_EMAIL: ${FORGEJO_ADMIN_EMAIL:-"admin@localhost"}
       # FORGEJO__actions__DEFAULT_ACTIONS_URL: "https://data.forgejo.org"
       # FORGEJO__actions__ARTIFACT_RETENTION_DAYS: "90"
       # FORGEJO__actions__LOG_RETENTION_DAYS: "365"
