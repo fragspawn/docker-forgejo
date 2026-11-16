@@ -1,4 +1,21 @@
 services:
+  aws-cli-restore:
+    image: public.ecr.aws/aws-cli/aws-cli:latest
+    container_name: moodle-aws-cli-restore
+    entrypoint: bash -c 
+      "aws s3 cp s3://$${AWS_S3_SQL_BUCKET_NAME}/forgejo.sql /sql &&
+        aws s3 sync s3://$${AWS_S3_FORGEJO_DATA_BUCKET_NAME} /data &&
+        chown -R 1000:1000 /data"
+    volumes:
+      - mariadb-sql:/sql
+      - forgejo-data:/data
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-your_access_key_id}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-your_secret_access_key}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-ap-southeast-2}
+      AWS_S3_SQL_BUCKET_NAME: ${AWS_S3_SQL_BUCKET_NAME:-staging-moodlesql}
+      AWS_S3_FORGEJO_DATA_BUCKET_NAME: ${AWS_S3_FORGEJO_DATA_BUCKET_NAME:-staging-forgejo}
+    working_dir: /sql
   db:
     image: mariadb:11
     container_name: forgejo-db
@@ -279,10 +296,51 @@ services:
       # [metrics] – Prometheus metrics endpoint
       # -----------------------------------------------------------------------
       # FORGEJO__metrics__ENABLED:  docker-in-docker:
+  db-dump:
+    image: mariadb:11
+    container_name: db-backup
+    restart: "no"
+    user: "0:0"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    command: /bin/sh -c "mariadb-dump -h $${MARIADB_HOST} --port=3306 --user=$${MARIADB_USER} --password=$${MARIADB_PASSWORD} --single-transaction --quick --lock-tables=false $${MARIADB_DATABASE} > /backups/moodle_backup.sql"
+    environment:
+      - MARIADB_DATABASE=${MARIADB_DATABASE:-moodle}
+      - MARIADB_USER=${MARIADB_USER:-moodle}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD:-change-this-db-password}
+      - MARIADB_HOST=${MARIADB_HOST:-mariadb}
+    volumes:
+      - backup-data:/backups:z
+    working_dir: /backups
+    profiles:
+      - backup
+  aws-cli-backup:
+    image: public.ecr.aws/aws-cli/aws-cli:latest
+    container_name: aws-cli-backup
+    entrypoint: bash -c 
+      "aws s3 cp /backups/moodle_backup.sql s3://$${AWS_S3_SQL_BUCKET_NAME} &&
+       aws s3 sync /moodledata s3://$${AWS_S3_MOODLEDATA_BUCKET_NAME} --delete"
+    volumes:
+      - backup-data:/backups
+      - forgejo-data:/data
+    depends_on:
+      db-dump:
+        condition: service_completed_successfully
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-your_access_key_id}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-your_secret_access_key}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-ap-southeast-2}
+      AWS_S3_SQL_BUCKET_NAME: ${AWS_S3_SQL_BUCKET_NAME:-staging-moodlesql}
+      AWS_S3_MOODLEDATA_BUCKET_NAME: ${AWS_S3_MOODLEDATA_BUCKET_NAME:-staging-moodledata}
+    working_dir: /backups
+    profiles:
+      - backup
 networks:
   forgejo:
     external: false
 volumes:
   mariadb-sql:
-  forgejo-data:
   mariadb-data:
+  forgejo-data:
+  backup-data:
