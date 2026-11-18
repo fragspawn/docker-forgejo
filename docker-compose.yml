@@ -398,6 +398,7 @@ services:
       - /bin/sh
       - /entrypoint.sh
     environment:
+      TZ: "Australia/Brisbane"
       # URL of the Forgejo instance (must match ROOT_URL / internal Docker network name)
       FORGEJO_INSTANCE_URL: "http://server:3000"
       # Admin credentials used to fetch a runner registration token via API.
